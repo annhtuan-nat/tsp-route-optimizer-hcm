@@ -8,11 +8,7 @@ def tour_length(route, matrix):
         return 0.0
 
     return sum(
-        matrix[
-            route[i]
-        ][
-            route[(i + 1) % len(route)]
-        ]
+        matrix[route[i]][route[(i + 1) % len(route)]]
         for i in range(len(route))
     )
 
@@ -38,10 +34,7 @@ def solve_brute_force(matrix, start=0):
 
     for permutation in itertools.permutations(remaining):
         route = [start] + list(permutation)
-        distance = tour_length(
-            route,
-            matrix
-        )
+        distance = tour_length(route, matrix)
 
         checked += 1
 
@@ -81,10 +74,7 @@ def solve_held_karp(matrix, start=0):
         parent[(mask, city)] = start
 
     for size in range(2, len(cities) + 1):
-        for subset in itertools.combinations(
-            cities,
-            size
-        ):
+        for subset in itertools.combinations(cities, size):
             mask = 0
 
             for city in subset:
@@ -102,9 +92,7 @@ def solve_held_karp(matrix, start=0):
                         continue
 
                     value = (
-                        dp[
-                            (previous_mask, previous)
-                        ]
+                        dp[(previous_mask, previous)]
                         + matrix[previous][current]
                     )
 
@@ -137,9 +125,7 @@ def solve_held_karp(matrix, start=0):
     while current != start:
         route.append(current)
 
-        previous = parent[
-            (mask, current)
-        ]
+        previous = parent[(mask, current)]
 
         mask ^= 1 << index[current]
         current = previous
@@ -150,7 +136,6 @@ def solve_held_karp(matrix, start=0):
 
 
 def solve_nearest_neighbor(matrix, start=0):
-    
     n = len(matrix)
 
     if n == 0:
@@ -181,69 +166,10 @@ def solve_nearest_neighbor(matrix, start=0):
         visited[nearest] = True
         current = nearest
 
-    return route, tour_length(
-        route,
-        matrix
-    )
-
-
-def two_opt(route, matrix):
-    if len(route) < 4:
-        return route[:], tour_length(
-            route,
-            matrix
-        )
-
-    best = route[:]
-    improved = True
-
-    while improved:
-        improved = False
-        best_distance = tour_length(
-            best,
-            matrix
-        )
-
-        n = len(best)
-
-        for i in range(1, n - 2):
-            for j in range(i + 1, n - 1):
-                candidate = (
-                    best[:i]
-                    + best[i:j + 1][::-1]
-                    + best[j + 1:]
-                )
-
-                candidate_distance = tour_length(
-                    candidate,
-                    matrix
-                )
-
-                if candidate_distance < best_distance:
-                    best = candidate
-                    best_distance = candidate_distance
-                    improved = True
-                    break
-
-            if improved:
-                break
-
-    return best, tour_length(
-        best,
-        matrix
-    )
-
+    return route, tour_length(route, matrix)
 
 def solve_heuristic(matrix, start=0):
-    route, _ = solve_nearest_neighbor(
-        matrix,
-        start
-    )
-
-    return two_opt(
-        route,
-        matrix
-    )
+    return solve_nearest_neighbor(matrix, start)
 
 
 def run_algorithm(
@@ -283,7 +209,7 @@ def run_algorithm(
         )
 
         info = {
-            "algorithm": "Heuristic (Nearest Neighbor + 2-opt)",
+            "algorithm": "Heuristic (Nearest Neighbor)",
             "complexity": "O(n²)"
         }
 
