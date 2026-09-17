@@ -150,6 +150,7 @@ def solve_held_karp(matrix, start=0):
 
 
 def solve_nearest_neighbor(matrix, start=0):
+    
     n = len(matrix)
 
     if n == 0:
@@ -180,7 +181,10 @@ def solve_nearest_neighbor(matrix, start=0):
         visited[nearest] = True
         current = nearest
 
-    return route, tour_length(route, matrix)
+    return route, tour_length(
+        route,
+        matrix
+    )
 
 
 def two_opt(route, matrix):
